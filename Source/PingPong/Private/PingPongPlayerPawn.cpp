@@ -9,8 +9,8 @@
 APingPongPlayerPawn::APingPongPlayerPawn()
  {
 	 PrimaryActorTick.bCanEverTick = true;
-	 USceneComponent * root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	 RootComponent = root;
+	 USceneComponent * Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	 RootComponent = Root;
 	 SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	 SpringArm->SetupAttachment(GetRootComponent());
 	 Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
