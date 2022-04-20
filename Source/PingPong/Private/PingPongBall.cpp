@@ -122,13 +122,5 @@ void APingPongBall::Multicast_HitEffect_Implementation()
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect,GetActorLocation());
 	}
 }
-void APingPongBall::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	const FVector NewLocation(0.0f,0.0f,70.0f);
-	if (OtherActor->IsA(APingPongGate::StaticClass()))
-	{
- 		SetActorLocation(NewLocation);
- 	}
-}
+
 
