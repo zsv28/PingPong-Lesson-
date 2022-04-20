@@ -5,9 +5,14 @@
 
 #include "DrawDebugHelpers.h"
 #include "PingPongGate.h"
+#include "Engine/AssetManager.h"
+#include "Engine/StreamableManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Particles/ParticleSystem.h"
 #include "Net/UnrealNetwork.h"
+
+
 
 
 
@@ -34,7 +39,40 @@ void APingPongBall::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	LoadBodyRes(LoadMesh, LoadMaterial);
+	if (LoadMesh)
+	{
+		BodyMesh->SetStaticMesh(LoadMesh);
+		
+		if (LoadMaterial)
+		{
+			BodyMesh->SetMaterial(0, LoadMaterial);
+		}
+	}
+
+	HitEffect = LoadObject<UParticleSystem>(nullptr,TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"),
+		nullptr, LOAD_None, nullptr);
 }
+
+void APingPongBall::LoadBodyRes(UStaticMesh*& Mesh, UMaterial*& Material)
+{
+	FStreamableManager& StreamableManager =  UAssetManager::Get().GetStreamableManager();
+
+	if (BodyMaterialRef.IsPending())
+	{
+		const FSoftObjectPath& AssetMaterRef = BodyMaterialRef.ToSoftObjectPath();
+		BodyMeshRef = Cast<UMaterial>(StreamableManager.LoadSynchronous(AssetMaterRef));
+		Material = BodyMaterialRef.Get();
+	}
+	
+	if (BodyMeshRef.IsPending())
+	{
+		const FSoftObjectPath& AssetMeshRef = BodyMeshRef.ToSoftObjectPath();
+		BodyMeshRef = Cast<UStaticMesh>(StreamableManager.LoadSynchronous(AssetMeshRef));
+		Mesh = BodyMeshRef.Get();
+	}
+}
+
 // Called every frame
 void APingPongBall::Tick(float DeltaTime)
 {
