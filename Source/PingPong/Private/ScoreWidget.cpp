@@ -6,6 +6,7 @@
 void UScoreWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	
 }
 
 void UScoreWidget::Player1ScoreUpdate(int NewValue)
@@ -28,4 +29,9 @@ void UScoreWidget::Player2ScoreUpdate(int NewValue)
 		FString String { FString::Format(TEXT("Player_2: {0}") , Arg) };
 		T_Player2Score->SetText(FText::FromString(String));
 	}
+}
+
+void UScoreWidget::SwitchWidget(int32 playerIdex)
+{
+	WidgetSwitcher->SetActiveWidgetIndex(playerIdex);
 }

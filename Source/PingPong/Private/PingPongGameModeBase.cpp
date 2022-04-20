@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
+#include "PingPongBall.h"
 
 namespace utils
 {
@@ -19,6 +20,21 @@ namespace utils
 			Out.Add(*It);
 		}
 	}
+}
+
+bool APingPongGameModeBase::StartGame()
+{
+	TArray<APingPongBall*> FoundActors;
+	utils::FindAllActors<APingPongBall>(GetWorld(), FoundActors);
+	
+	if (FoundActors.Num() > 0)
+	{
+		APingPongBall* Ball { FoundActors.Last() };
+		Ball->StartMove();
+		return true;
+	}
+	
+	return false;
 }
 
 APingPongGameModeBase::APingPongGameModeBase()
@@ -98,6 +114,13 @@ void APingPongGameModeBase::PostLogin(APlayerController* NewPlayer)
 		CurrPlayer->SetStartTransfrorm(StartPos->GetActorTransform());
 		CurrPlayer->Client_HUDInit();
 		CurrPlayer->Server_Init(PlayerID, PlayerGate);
+
+		if (Player1 != nullptr && Player2 != nullptr)
+		{
+			Player1->Client_SetHUDPlayerIndex(PlayerId::OnGame);
+			Player2->Client_SetHUDPlayerIndex(PlayerId::OnGame);
+			StartGame();
+		}
 	}
 	else
 	{

@@ -59,6 +59,14 @@ bool APingPongPlayerController::Server_Init_Validate(int32 NewPlayerID, APingPon
 	return (NewPlayerID != 0 && NewGate != nullptr);
 }
 
+void APingPongPlayerController::Client_SetHUDPlayerIndex_Implementation(PlayerId playerIdex)
+{
+	if (Widget)
+	{
+		Widget->SwitchWidget(static_cast<int32>(playerIdex));
+	}
+}
+
 void APingPongPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();

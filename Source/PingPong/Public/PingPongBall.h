@@ -22,7 +22,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ball params")
 	UParticleSystem* HitEffect;
 	UPROPERTY(Replicated)
-	bool IsMoving = true;
+	bool IsMoving = false;
 	
 public:
 	

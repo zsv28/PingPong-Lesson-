@@ -11,6 +11,13 @@
 /**
  * 
  */
+UENUM()
+enum class PlayerId
+{
+	WaitOtherPlayers = 0,
+	OnGame = 1
+};
+
 UCLASS()
 class PINGPONG_API APingPongPlayerController : public APlayerController
 {
@@ -40,6 +47,9 @@ public:
 
 	UFUNCTION(Client, Reliable, WithValidation)
 	void Client_HUDInit();
+
+	UFUNCTION(Client, Reliable)
+	void Client_SetHUDPlayerIndex(PlayerId playerIdex);
 	
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_Init(int32 NewPlayerID, APingPongGate* NewGate);

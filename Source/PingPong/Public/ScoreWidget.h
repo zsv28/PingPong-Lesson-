@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/TextBlock.h"
+#include "Components/WidgetSwitcher.h"
 #include "ScoreWidget.generated.h"
+
 
 /**
  * 
@@ -20,6 +22,8 @@ protected:
 	UTextBlock* T_Player1Score;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* T_Player2Score;
+	UPROPERTY(meta = (BindWidget))
+	UWidgetSwitcher* WidgetSwitcher;
 	
 public:
 	
@@ -30,5 +34,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void Player2ScoreUpdate(int NewValue);
+
+	UFUNCTION(BlueprintCallable)
+	void SwitchWidget(int32 playerIdex);
 };
 

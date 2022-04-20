@@ -35,6 +35,8 @@ protected:
 
 	int32 CurrentScore = 0;
 
+	bool StartGame();
+
 public:
     APingPongGameModeBase();
     virtual void BeginPlay() override;
