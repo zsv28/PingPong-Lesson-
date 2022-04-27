@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/SphereComponent.h"
+#include "Engine/StreamableManager.h"
 #include "GameFramework/Actor.h"
 #include "PingPongBall.generated.h"
 
@@ -31,11 +32,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ball params")
 	float MoveSpeed = 100;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSoftObjectPtr<UParticleSystem> HitEffectRef;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ball params")
 	UParticleSystem* HitEffect;
 
 	UPROPERTY(Replicated)
 	bool IsMoving = false;
+
+	TSharedPtr<FStreamableHandle> AssetHandle;
+
+	
 	
 public:
 	APingPongBall();
@@ -56,8 +64,17 @@ protected:
 	UFUNCTION(NetMulticast, Unreliable)
 	void Multicast_HitEffect();
 
-	void LoadBodyRes(UStaticMesh*& Mesh, UMaterial*& Material);
+	UFUNCTION(BlueprintCallable, CallInEditor)
+	void LoadBodyMesh();
+
+	void BodyMeshLoaded();
 	
+
+	void LoadHitEffect();
+
+	void HitEffectLoad();
+	
+	UMaterial* LoadBodyRes();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -70,8 +87,4 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray< class FLifetimeProperty > &OutLifetimeProps) const override;
 
-protected:
-	
-	UStaticMesh* LoadMesh = nullptr;
-	UMaterial* LoadMaterial = nullptr;
 };

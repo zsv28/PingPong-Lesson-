@@ -13,10 +13,6 @@
 #include "Net/UnrealNetwork.h"
 
 
-
-
-
-
 // Sets default values
 APingPongBall::APingPongBall()
 {
@@ -38,23 +34,48 @@ APingPongBall::APingPongBall()
 void APingPongBall::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	LoadBodyRes(LoadMesh, LoadMaterial);
-	if (LoadMesh)
-	{
-		BodyMesh->SetStaticMesh(LoadMesh);
-		
-		if (LoadMaterial)
-		{
-			BodyMesh->SetMaterial(0, LoadMaterial);
-		}
-	}
-
-	HitEffect = LoadObject<UParticleSystem>(nullptr,TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"),
-		nullptr, LOAD_None, nullptr);
 }
 
-void APingPongBall::LoadBodyRes(UStaticMesh*& Mesh, UMaterial*& Material)
+void APingPongBall::LoadBodyMesh()
+{
+	FStreamableDelegate LoadMeshDelegate;
+	LoadMeshDelegate.BindUObject(this, &APingPongBall::BodyMeshLoaded);
+	UAssetManager& AssetManager = UAssetManager::Get();
+	FStreamableManager& StreamableManager = AssetManager.GetStreamableManager();
+	AssetHandle = StreamableManager.RequestAsyncLoad(BodyMeshRef.ToSoftObjectPath(),LoadMeshDelegate);
+}
+
+void APingPongBall::BodyMeshLoaded()
+{
+	if (UStaticMesh* LoadedMesh = Cast<UStaticMesh>(AssetHandle.Get()->GetLoadedAsset()))
+	{
+		BodyMesh->SetStaticMesh(LoadedMesh);
+		if (UMaterial* Material = LoadBodyRes())
+		{
+			BodyMesh->SetMaterial(0, Material);
+		}
+	}
+	
+}
+
+void APingPongBall::LoadHitEffect()
+{
+	FStreamableDelegate LoadMeshDelegate;
+	LoadMeshDelegate.BindUObject(this, &APingPongBall::HitEffectLoad);
+	UAssetManager& AssetManager = UAssetManager::Get();
+	FStreamableManager& StreamableManager = AssetManager.GetStreamableManager();
+	AssetHandle = StreamableManager.RequestAsyncLoad(HitEffectRef.ToSoftObjectPath(),LoadMeshDelegate);
+}
+
+void APingPongBall::HitEffectLoad()
+{
+	if (UParticleSystem* LoadedHitEffect = Cast<UParticleSystem>(AssetHandle.Get()->GetLoadedAsset()))
+	{
+		HitEffect = LoadedHitEffect;
+	}
+}
+
+UMaterial* APingPongBall::LoadBodyRes()
 {
 	FStreamableManager& StreamableManager =  UAssetManager::Get().GetStreamableManager();
 
@@ -62,15 +83,8 @@ void APingPongBall::LoadBodyRes(UStaticMesh*& Mesh, UMaterial*& Material)
 	{
 		const FSoftObjectPath& AssetMaterRef = BodyMaterialRef.ToSoftObjectPath();
 		BodyMeshRef = Cast<UMaterial>(StreamableManager.LoadSynchronous(AssetMaterRef));
-		Material = BodyMaterialRef.Get();
 	}
-	
-	if (BodyMeshRef.IsPending())
-	{
-		const FSoftObjectPath& AssetMeshRef = BodyMeshRef.ToSoftObjectPath();
-		BodyMeshRef = Cast<UStaticMesh>(StreamableManager.LoadSynchronous(AssetMeshRef));
-		Mesh = BodyMeshRef.Get();
-	}
+	return BodyMaterialRef.Get();
 }
 
 // Called every frame
